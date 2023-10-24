@@ -1,0 +1,30 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+    packageRules: [
+        {
+            description: ["group all products of the .NET Datadog tracing agent repo"],
+            groupName: "Datadog agent (.NET)",
+            groupSlug: "datadog-dotnet-agent",
+
+            // I want these two match* terms to be ORed--either match the source
+            // URLs (the NuGet packages) or the package name (the Docker image
+            // as determined by the regex manager below).
+            matchSourceUrls: ["https://github.com/DataDog/dd-trace-dotnet"],
+            matchPackageNames: ["datadoghq/dd-lib-dotnet-init"],
+        },
+    ],
+
+    regexManagers: [
+        {
+            // Find the Datadog tracing library version in a Helm template
+            fileMatch: [".*\\.ya?ml$"],
+            matchStrings: [
+                "admission\\.datadoghq\\.com/(?<lang>.*?)-lib\\.version:\\s*['\"]?(?<currentValue>.*?)['\"]?\\n"
+            ],
+            datasourceTemplate: "docker",
+            depNameTemplate: "datadoghq/dd-lib-{{{lang}}}-init",
+            registryUrlTemplate: "https://gcr.io",
+        },
+    ],
+}
